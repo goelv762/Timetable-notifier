@@ -1,6 +1,8 @@
+import datetime
+
 def parse_lines():
     TIMETABLE = open("./data/timetable.ics", "r")
-    ALLOWED_PREFIX = ["DTSTART;", "DTEND;", "SUMMARY", "LOCATION", "DESCRIPTION"]
+    ALLOWED_PREFIX = ["DTSTART;", "SUMMARY:", "LOCATION:", "DESCRIPTION:"]
 
     raw_timetable_lines = TIMETABLE.readlines()
     new_timetable_lines = []
@@ -16,9 +18,30 @@ def parse_lines():
         colon_index = new_timetable_lines[y].find(':')
         if (colon_index != -1):
             new_timetable_lines[y] = new_timetable_lines[y][new_timetable_lines[y].find(':') + 1:]
+            new_timetable_lines[y] = new_timetable_lines[y].replace("T", "")
 
     
-    temp = open("./data/temp.txt", "w")
+    temp = open("./data/timetable.txt", "w")
     temp.writelines(new_timetable_lines)
-  
+
+
 parse_lines()
+
+timetable = open("./data/timetable.txt", "r")
+timetable_lines = timetable.readlines()
+timetable.close()
+
+for x in range(len(timetable_lines)):
+
+    #gets current time and changes it so it can be compared to timetable time
+    now = str(datetime.datetime.now())
+    now = now.replace("-", "").replace(" ", "").replace(":", "")[: 12] + "00"
+    now = int(now)
+
+    try:
+        if (int(timetable_lines[x]) < now):
+            print(timetable_lines[x])
+        
+    except ValueError:
+        pass
+print(now)
